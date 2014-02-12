@@ -1,0 +1,270 @@
+<div class="container">
+
+    <div class="page-header">
+        <button type="button" data-ng-click="novo()" class="btn btn-primary" data-toggle="modal" data-target="#vendaModal">
+            <span class="glyphicon glyphicon-plus"></span>Venda
+        </button>
+    </div>
+    <div data-ng-if="vendas.length == 0" class="row">
+        <div class="col-sm-12" style="text-align:center">
+            <h4>
+                <br>
+                <br>
+                <p>Nenhuma venda encontrada até este momento!</p>
+                <p>Para inserir uma nova venda, <a href="" data-ng-click="novo()" data-toggle="modal" data-target="#vendaModal">clique aqui.</a>
+                </p>
+            </h4>
+        </div>
+    </div>
+
+    <!-- <div data-ng-repeat="vendaByStatus in ['Aberta', 'Concluida', 'Cancelada']" data-ng-if="existVendasWith(vendaByStatus)"> -->
+    <div data-ng-repeat="vendaByStatus in ['Aberta', 'Concluida', 'Cancelada']" data-ng-if="existVendasWith(vendaByStatus)">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <button class="btn btn-default" data-toggle="collapse" data-target="#grupo{{vendaByStatus}}">
+                    <span class="label label-{{vendaByStatus=='Aberta' ? 'warning' : (vendaByStatus == 'Concluida' ? 'success' : 'danger')}}">{{vendaByStatus=='Concluida'? 'Concluída': vendaByStatus}}s</span>
+                </button>
+            </div>
+            <div class="panel-body">
+                <div id="grupo{{vendaByStatus}}" class="collapse in">
+                    <table data-ng-if="vendas.length > 0" class="table table-striped table-hover table-bordered ellipsis">
+                        <thead>
+                            <tr>
+                                <th width="50%">
+                                    <a data-ng-click="predicate = 'cliente';
+                    reverse = !reverse" href="">Cliente <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'cliente' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'cliente' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'cliente'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="20%">
+                                    <a data-ng-click="predicate = 'data';
+                    reverse = !reverse" href="">Data <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'data' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'data' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'data'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="20%">
+                                    <a data-ng-click="predicate = 'total';
+                    reverse = !reverse" href="">Total <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'total' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'total' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'total'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="10%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-repeat="venda in filtered = (vendas | filter:vendaByStatus)" class="ng-scope">
+                                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                                    {{venda.cliente.nome}}
+                                </td>
+                                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                                    {{venda.data}}
+                                </td>
+                                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                                    {{total(venda) | currency: 'R$ '}}
+                                </td>
+                                <td data-ng-if="!venda.removal" class="ng-scope">
+                                    <div class="btn-group">
+                                        <button class="btn btn-default" data-ng-click="open(venda)" title="Editar esta venda" data-toggle="modal" data-target="#vendaModal">
+                                            <span class="glyphicon glyphicon-edit"></span>
+                                        </button>
+                                        <button class="btn btn-default" data-ng-click="excluir(venda)" title="Excluir esta venda" data-ng-if="venda.status == 'Aberta'">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VENDA Modal -->
+    <div class="modal fade" id="vendaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="width:610px;">
+                <div class="modal-header" data-ng-class="{concluida:venda.status=='Concluida', cancelada:venda.status=='Cancelada', aberta:venda.status=='' || venda.status == 'Aberta'}">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Adicionar Venda</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="span12">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label for="selectVendedor">Vendedor</label>
+                                <div class="input-group">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" data-toggle="modal" data-target="#vendedorModal">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                    </span>
+                                    <select name="vendedor" id="selectVendedor" data-ng-model="venda.vendedor" data-ng-options="c.nome for c in vendedores" class="form-control" data-ng-disabled="desabilitarPorStatus()">
+                                        <option value="">-- Escolha o vendedor --</option>
+                                    </select>
+                                </div>
+                                <!-- /input-group -->
+                            </div>
+                            <!-- /.col-lg-6 -->
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label for="selectVendedor">Cliente</label>
+                                <div class="input-group">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" data-toggle="modal" data-target="#clienteModal" data-ng-click="newCli()">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </button>
+                                    </span>
+                                    <select id="selectCliente" data-ng-model="venda.cliente" data-ng-options="c.nome for c in clientes" class="form-control" data-ng-disabled="desabilitarPorStatus()">
+                                        <option value="">-- Escolha o cliente --</option>
+                                    </select>
+                                </div>
+                                <!-- /input-group -->
+                            </div>
+                            <!-- /.col-lg-6 -->
+                        </div>
+                        <div>
+                            <div class="page-header">
+                                <button type="button" data-ng-click="add()" class="btn btn-default" data-ng-disabled="desabilitarPorStatus()">
+                                    <span class="glyphicon glyphicon-plus"></span>Item
+                                </button>
+                            </div>
+                            <form class="form-inline" data-ng-repeat="item in venda.itens">
+                                <div class="form-group" title="Produto">
+                                    <label class="sr-only" for="inputProduto">Produto</label>
+                                    <input type="text" class="form-control" id="inputProduto" placeholder="Produto" data-ng-model="item.produto" data-ng-disabled="desabilitarPorStatus()">
+                                </div>
+                                <div class="form-group" title="Quantidade">
+                                    <label class="sr-only" for="inputQuantidade">Quantidade</label>
+                                    <input type="number" class="form-control" id="inputQuantidade" placeholder="Quantidade" data-ng-model="item.quantidade" data-ng-disabled="desabilitarPorStatus()" data-ng-minlength="1">
+                                </div>
+                                <div class="form-group" title="Preço">
+                                    <label class="sr-only" for="inputPreco">Preço</label>
+                                    <input type="number" class="form-control" id="inputPreco" placeholder="Preço" data-ng-model="item.preco" data-ng-disabled="desabilitarPorStatus()" data-ng-minlength="1">
+                                </div>
+                                <button type="button" data-ng-click="remove(item)" data-ng-if="venda.status == 'Aberta' || venda.status == ''" class="btn btn-danger btn-xs" title="Eliminar item">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer" data-ng-class="{concluida:venda.status=='Concluida', cancelada:venda.status=='Cancelada', aberta:venda.status=='' || venda.status == 'Aberta'}">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+                        <button id="gravarVenda" type="button" data-ng-click="save(venda)" data-ng-disabled="desabilitarPorStatus()" class="btn btn-primary" data-placement="top" rel="popover">
+                            <span class="glyphicon glyphicon-floppy-save"></span>Gravar
+                        </button>
+                        <button id="cancelarVenda" type="button" data-ng-click="cancelar(venda)" data-ng-if="venda.status == 'Aberta'" class="btn btn-danger" data-placement="top" rel="popover">
+                            <span class="glyphicon glyphicon-remove"></span>Cancelar
+                        </button>
+                        <button id="concluirVenda" type="button" data-ng-click="concluir(venda)" data-ng-if="venda.status == 'Aberta'" class="btn btn-success" rel="popover" data-placement="top">
+                            <span class="glyphicon glyphicon-ok"></span>Concluir
+                        </button>
+                    </div>
+
+                    <!-- VENDEDOR Modal -->
+                    <div data-ng-controller="VendedoresCtrl" class="modal fade" id="vendedorModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Adicionar Vendedor</h4>
+                                </div>
+                                <div class="modal-body">
+
+                                    <div class="span2">
+                                        <label for="inputCodigo">Código</label>
+                                        <div class="input-group">
+                                            <input data-ng-model="vendedor.id" data-restrict-number="" data-ng-disabled="1" required="" maxlength="4" type="text" name="numero" id="inputCodigo" class="form-control">
+                                        </div>
+                                        <!-- /input-group -->
+                                    </div>
+                                    <!-- /.col-lg-6 -->
+                                    <br>
+                                    <div class="row-fluid">
+                                        <div class="span12">
+                                            <label for="inputNome">Nome</label>
+                                            <div class="input-group">
+                                                <input data-ng-model="vendedor.nome" maxlength="50" type="text" name="nome" id="inputNome" class="form-control">
+                                            </div>
+                                            <!-- /input-group -->
+                                        </div>
+                                        <!-- /.col-lg-6 -->
+                                    </div>
+
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-ng-click="hide()">Fechar</button>
+                                    <button id="gravarVendedor" type="button" class="btn btn-primary" data-placement="top" rel="popover" data-ng-click="save(); novo()">Gravar</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+
+                    <!-- CLIENTE Modal -->
+                    <div data-ng-controller="ClientesCtrl" class="modal fade" id="clienteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 class="modal-title" id="myModalLabel">Adicionar Cliente</h4>
+                                </div>
+                                <div class="modal-body">
+
+                                    <div class="span2">
+                                        <label for="inputCodigo">Código</label>
+                                        <div class="input-group">
+                                            <input data-ng-model="cliente.id" data-restrict-number="" data-ng-disabled="1" required="" maxlength="4" type="text" name="numero" id="inputCodigo" class="form-control">
+                                        </div>
+                                        <!-- /input-group -->
+                                    </div>
+                                    <!-- /.col-lg-6 -->
+                                    <br>
+                                    <div class="row-fluid">
+                                        <div class="span12">
+                                            <label for="inputNome">Nome</label>
+                                            <div class="input-group">
+                                                <input data-ng-model="cliente.nome" maxlength="50" type="text" name="nome" id="inputNome" class="form-control">
+                                            </div>
+                                            <!-- /input-group -->
+                                        </div>
+                                        <!-- /.col-lg-6 -->
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-ng-click="hide()">Fechar</button>
+                                    <button id="gravarCliente" type="button" class="btn btn-primary" data-placement="top" rel="popover" data-ng-click="saveCli(); novoCli()">Gravar</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                    <!-- /.modal -->
+                </div>
+
+            </div>
+
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+<style type="text/css">
+.concluida {
+    border-color: green;
+    color: green;
+}
+.cancelada {
+    border-color: red;
+    color: red;
+}
+.aberta {
+    border-color: orange;
+    color: orange;
+}
+</style>
