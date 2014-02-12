@@ -1,0 +1,274 @@
+<div class="container">
+
+    <div class="page-header">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <button class="btn btn-default" data-toggle="collapse" data-target="#filtros">
+                            <span class="glyphicon glyphicon-filter"></span>Filtrar
+                        </button>
+                    </div>
+                    <div class="panel-body">
+                        <div id="filtros" class="collapse in">
+                            <div class="col-lg-6">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" data-title="Data das Vendas" name="fData" id="fData" data-ng-model="fData" data-ng-init="fData=false">Data das vendas
+                                </label>
+                                <label class="checkbox inline">
+                                    <input type="checkbox" data-title="Vendedor" name="fVendedor" id="fVedendor" data-ng-model="fVendedor" data-ng-init="fVendedor=false">Vendedor
+                                </label>
+                            </div>
+                            <div class="col-lg-6">
+                                <label class="checkbox inline">
+                                    <input type="checkbox" data-title="Cliente" name="fCliente" id="fCliente" data-ng-model="fCliente" data-ng-init="fCliente=false">Cliente
+                                </label>
+                                <label class="checkbox inline">
+                                    <input type="checkbox" data-title="Status" name="fStatus" id="fStatus" data-ng-model="fStatus" data-ng-init="fStatus=false">Estágio
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div data-ng-if="fData">
+                                        <label for="inputDataIni">De</label>
+                                        <div class="input-group">
+                                            <input data-ng-model="filtros.dataInicial" maxlength="50" type="date" name="nome" id="inputDataIni" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div data-ng-if="fData">
+                                        <label for="inputDataFin">Até</label>
+                                        <div class="input-group">
+                                            <input data-ng-model="filtros.dataFinal" maxlength="50" type="date" name="nome" id="inputDataFin" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div data-ng-if="fVendedor">
+                                        <label for="inputVendedor">Vendedor</label>
+                                        <div class="input-group">
+                                            <input data-ng-model="filtros.vendedor" maxlength="50" type="text" name="nome" id="inputDataIni" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div data-ng-if="fCliente">
+                                        <label for="inputCliente">Cliente</label>
+                                        <div class="input-group">
+                                            <input data-ng-model="filtros.cliente" maxlength="50" type="text" name="nome" id="inputCliente" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div data-ng-if="fStatus">
+                                        <label>Estágio</label>
+                                        <div class="input-group">
+                                            <label class="input-group-addon">
+                                                <input data-ng-model="filtros.status" type="radio" name="inputAberta" id="inputAberta" value="Aberta">Aberta</label>
+                                            <label class="input-group-addon">
+                                                <input data-ng-model="filtros.status" type="radio" name="inputConcluida" id="inputConcluida" value="Concluida">Concluída</label>
+                                            <label class="input-group-addon">
+                                                <input data-ng-model="filtros.status" type="radio" name="inputCancelada" id="inputCancelada" value="Cancelada">Cancelada</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <button class="btn btn-default" data-toggle="collapse" data-target="#grupos">
+                            <span class="glyphicon glyphicon-th"></span>Agrupar
+                        </button>
+                    </div>
+                    <div class="panel-body">
+                        <div id="grupos" class="collapse in">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="input-group">
+                                        <label class="input-group-addon">
+                                            <input data-ng-model="agruparPor" type="radio" name="inputGDtVendas" id="inputGDtVendas" value="data">Data das vendas</label>
+                                        <label class="input-group-addon">
+                                            <input data-ng-model="agruparPor" type="radio" name="inputGVendedor" id="inputGVendedor" value="vendedor">Vendedor</label>
+                                        <label class="input-group-addon">
+                                            <input data-ng-model="agruparPor" type="radio" name="inputGVendedor" id="inputGVendedor" value="status">Estágio</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" data-ng-click="limpar()" class="btn btn-default">
+            Limpar
+        </button>
+        <button type="button" data-ng-click="pesquisar()" class="btn btn-primary">
+            <span class="glyphicon glyphicon-search"></span>Pesquisar
+        </button>
+    </div>
+    <!-- page header-->
+    <div data-ng-if="vendas.length == 0 && pesquisou" class="row">
+        <div class="col-sm-12" style="text-align:center">
+            <h4>
+                <br>
+                <br>
+                <p>Nenhuma venda resgistrada até este momento!</p>
+            </h4>
+        </div>
+    </div>
+
+    <table data-ng-if="vendas.length > 0 && !agruparPor" class="table table-striped table-hover table-bordered ellipsis">
+        <thead>
+            <tr>
+                <th width="5%">
+                    <a data-ng-click="predicate = 'id_venda';
+					reverse = !reverse" href="">Venda <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'id_venda' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'id_venda' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'id_venda'}" class="icon-blueDark icon-sort"></i></a>
+                </th>
+                <th width="25%">
+                    <a data-ng-click="predicate = 'cliente';
+					reverse = !reverse" href="">Cliente <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'cliente' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'cliente' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'cliente'}" class="icon-blueDark icon-sort"></i></a>
+                </th>
+                <th width="20%">
+                    <a data-ng-click="predicate = 'vendedor';
+					reverse = !reverse" href="">Vendedor <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'vendedor' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'vendedor' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'vendedor'}" class="icon-blueDark icon-sort"></i></a>
+                </th>
+                <th width="25%">
+                    <a data-ng-click="predicate = 'data';
+					reverse = !reverse" href="">Data <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'data' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'data' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'data'}" class="icon-blueDark icon-sort"></i></a>
+                </th>
+                <th width="20%">
+                    <a data-ng-click="predicate = 'total';
+					reverse = !reverse" href="">Total <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'total' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'total' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'total'}" class="icon-blueDark icon-sort"></i></a>
+                </th>
+                <th width="5%">
+                    <a data-ng-click="predicate = 'status';
+					reverse = !reverse" href="">Estágio <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'status' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'status' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'status'}" class="icon-blueDark icon-sort"></i></a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="venda in filtered = (vendas | filter: {vendedor: filtros.vendedor, cliente: filtros.cliente, status: filtros.status} | dateFilter:'data':filtros.dataInicial:filtros.dataFinal)" class="ng-scope">
+                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                    {{venda.id}}
+                </td>
+                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                    {{venda.cliente.id}} - {{venda.cliente.nome}}
+                </td>
+                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                    {{venda.vendedor.nome}}
+                </td>
+                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                    {{venda.data}}
+                </td>
+                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                    {{total(venda) | currency: 'R$ '}}
+                </td>
+                <td data-ng-if="!venda.removal" class="ng-scope ng-binding">
+                    <span class="label label-{{venda.status=='Aberta' ? 'warning' : (venda.status == 'Concluida' ? 'success' : 'danger')}}">{{venda.status}}</span>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>
+                    Total:
+                </td>
+                <td>
+                    {{totalizar(filtered) | currency: 'R$ '}}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- AGRUPADOS -->
+    <div data-ng-if="agruparPor && vendasAgrupadas" data-ng-repeat="vendasGrupos in vendasAgrupadas">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <button class="btn btn-default" data-toggle="collapse" data-target="#{{gerarId(vendasGrupos.grupo.nome || vendasGrupos.grupo)}}">
+                    {{vendasGrupos.grupo.nome || vendasGrupos.grupo}}
+                </button>
+            </div>
+            <div class="panel-body">
+                <div id="{{gerarId(vendasGrupos.grupo.nome || vendasGrupos.grupo)}}" class="collapse in">
+                    <table data-ng-if="vendasGrupos.obj.length > 0" class="table table-striped table-hover table-bordered ellipsis">
+                        <thead>
+                            <tr>
+                                <th width="5%">
+                                    <a data-ng-click="predicate = 'id_venda';
+							reverse = !reverse" href="">Venda <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'id_venda' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'id_venda' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'id_venda'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="25%">
+                                    <a data-ng-click="predicate = 'cliente';
+							reverse = !reverse" href="">Cliente <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'cliente' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'cliente' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'cliente'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="20%" data-ng-if="agruparPor != 'vendedor'">
+                                    <a data-ng-click="predicate = 'vendedor';
+							reverse = !reverse" href="">Vendedor <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'vendedor' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'vendedor' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'vendedor'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="25%" data-ng-if="agruparPor != 'data'">
+                                    <a data-ng-click="predicate = 'data';
+							reverse = !reverse" href="">Data <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'data' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'data' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'data'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="20%">
+                                    <a data-ng-click="predicate = 'total';
+							reverse = !reverse" href="">Total <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'total' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'total' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'total'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                                <th width="5%">
+                                    <a data-ng-click="predicate = 'status';
+							reverse = !reverse" href="">Estágio <i data-ng-class="{'icon-blueDark icon-sort-down': predicate == 'status' &amp;&amp; reverse, 'icon-blueDark icon-sort-up': predicate == 'status' &amp;&amp; !reverse, 'icon-blueDark icon-sort': predicate != 'status'}" class="icon-blueDark icon-sort"></i></a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-repeat="vendaG in filtered = (vendasGrupos.obj | filter: {vendedor: filtros.vendedor, cliente: filtros.cliente, status: filtros.status} | dateFilter:'data':filtros.dataInicial:filtros.dataFinal) " class="ng-scope">
+                                <td class="ng-scope ng-binding">
+                                    {{vendaG.id}}
+                                </td>
+                                <td class="ng-scope ng-binding">
+                                    {{vendaG.cliente.id}} - {{vendaG.cliente.nome}}
+                                </td>
+                                <td data-ng-if="agruparPor != 'vendedor'" class="ng-scope ng-binding">
+                                    {{vendaG.vendedor.nome}}
+                                </td>
+                                <td data-ng-if="agruparPor != 'data'" class="ng-scope ng-binding">
+                                    {{vendaG.data}}
+                                </td>
+                                <td class="ng-scope ng-binding">
+                                    {{total(vendaG) | currency: 'R$ '}}
+                                </td>
+                                <td class="ng-scope ng-binding">
+                                    <span class="label label-{{vendaG.status=='Aberta' ? 'warning' : (vendaG.status == 'Concluida' ? 'success' : 'danger')}}">{{vendaG.status}}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    Total:
+                                </td>
+                                <td>
+                                    {{totalizar(filtered) | currency: 'R$ '}}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
