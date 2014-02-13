@@ -48,7 +48,7 @@ app
             $scope.itens = [];
 
             function refresh() {
-                var delay = 100;
+                var delay = 500;
                 $scope.clientes = [];
                 $scope.vendas = [];
                 $scope.vendedores = [];
@@ -178,7 +178,7 @@ app
     .controller('AcompanhamentoCtrl', ['$scope', '$filter', 'vendaService', 'dateFilter', 'Restangular',
         function($scope, $filter, vendaService, dateFilter, Restangular) {
             function refresh() {
-                var delay = 100;
+                var delay = 500;
                 setTimeout(function() {
                     $scope.vendas = vendaService.getList();
                 }, delay);
